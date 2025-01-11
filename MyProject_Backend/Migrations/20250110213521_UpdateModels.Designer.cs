@@ -12,8 +12,8 @@ using MyProject_Backend.Data;
 namespace MyProject_Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250109000801_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250110213521_UpdateModels")]
+    partial class UpdateModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,263 +158,7 @@ namespace MyProject_Backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MyProject_Backend.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("MyProject_Backend.Models.Client", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Clients");
-                });
-
-            modelBuilder.Entity("MyProject_Backend.Models.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CurrentQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MinThreshold")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
-
-                    b.Property<string>("Reference")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("MyProject_Backend.Models.Stock", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CurrentQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsCritical")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Value")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId")
-                        .IsUnique();
-
-                    b.ToTable("Stocks");
-                });
-
-            modelBuilder.Entity("MyProject_Backend.Models.StockMovement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BatchNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float>("UnitPrice")
-                        .HasColumnType("real");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StockMovements");
-                });
-
-            modelBuilder.Entity("MyProject_Backend.Models.Supplier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Contact")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Suppliers");
-                });
-
-            modelBuilder.Entity("User", b =>
+            modelBuilder.Entity("MyProject_Backend.Data.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -426,9 +170,6 @@ namespace MyProject_Backend.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -436,8 +177,13 @@ namespace MyProject_Backend.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastLogin")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -476,9 +222,6 @@ namespace MyProject_Backend.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -496,6 +239,143 @@ namespace MyProject_Backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("MyProject_Backend.Models.Client", b =>
+                {
+                    b.Property<int>("ClientId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClientId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("ClientId");
+
+                    b.ToTable("Clients");
+                });
+
+            modelBuilder.Entity("MyProject_Backend.Models.Product", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProductId"));
+
+                    b.Property<int>("CurrentQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MinThreshold")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("MyProject_Backend.Models.Stock", b =>
+                {
+                    b.Property<int>("StockId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockId"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("StockId");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("Stocks");
+                });
+
+            modelBuilder.Entity("MyProject_Backend.Models.StockMovement", b =>
+                {
+                    b.Property<int>("StockMovementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockMovementId"));
+
+                    b.Property<int?>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("MovementDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("StockMovementId");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("StockMovements");
+                });
+
+            modelBuilder.Entity("MyProject_Backend.Models.Supplier", b =>
+                {
+                    b.Property<int>("SupplierId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("SupplierId");
+
+                    b.ToTable("Suppliers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -507,7 +387,7 @@ namespace MyProject_Backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("User", null)
+                    b.HasOne("MyProject_Backend.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -516,7 +396,7 @@ namespace MyProject_Backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("User", null)
+                    b.HasOne("MyProject_Backend.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -531,7 +411,7 @@ namespace MyProject_Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("User", null)
+                    b.HasOne("MyProject_Backend.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -540,7 +420,7 @@ namespace MyProject_Backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("User", null)
+                    b.HasOne("MyProject_Backend.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -549,15 +429,10 @@ namespace MyProject_Backend.Migrations
 
             modelBuilder.Entity("MyProject_Backend.Models.Product", b =>
                 {
-                    b.HasOne("MyProject_Backend.Models.Category", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId");
-
                     b.HasOne("MyProject_Backend.Models.Supplier", "Supplier")
                         .WithMany("Products")
-                        .HasForeignKey("SupplierId");
-
-                    b.Navigation("Category");
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Supplier");
                 });
@@ -577,7 +452,8 @@ namespace MyProject_Backend.Migrations
                 {
                     b.HasOne("MyProject_Backend.Models.Client", "Client")
                         .WithMany("StockMovements")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("MyProject_Backend.Models.Product", "Product")
                         .WithMany("StockMovements")
@@ -585,22 +461,16 @@ namespace MyProject_Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("User", "User")
+                    b.HasOne("MyProject_Backend.Models.Supplier", "Supplier")
                         .WithMany("StockMovements")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Client");
 
                     b.Navigation("Product");
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MyProject_Backend.Models.Category", b =>
-                {
-                    b.Navigation("Products");
+                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("MyProject_Backend.Models.Client", b =>
@@ -610,8 +480,7 @@ namespace MyProject_Backend.Migrations
 
             modelBuilder.Entity("MyProject_Backend.Models.Product", b =>
                 {
-                    b.Navigation("Stock")
-                        .IsRequired();
+                    b.Navigation("Stock");
 
                     b.Navigation("StockMovements");
                 });
@@ -619,10 +488,7 @@ namespace MyProject_Backend.Migrations
             modelBuilder.Entity("MyProject_Backend.Models.Supplier", b =>
                 {
                     b.Navigation("Products");
-                });
 
-            modelBuilder.Entity("User", b =>
-                {
                     b.Navigation("StockMovements");
                 });
 #pragma warning restore 612, 618

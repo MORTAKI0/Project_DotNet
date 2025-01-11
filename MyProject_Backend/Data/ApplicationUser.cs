@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace MyProject.Models // Replace with your actual namespace
+namespace MyProject_Backend.Data
 {
     public class ApplicationUser : IdentityUser
     {
-        // Add custom properties if needed
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string FirstName { get; set; } = string.Empty; // Initialize with default value
+        public string LastName { get; set; } = string.Empty; // Initialize with default value
+        public string Role { get; set; } = string.Empty; // Initialize with default value
+        public string Status { get; set; } = string.Empty; // Initialize with default value
     }
 }

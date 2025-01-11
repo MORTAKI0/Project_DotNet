@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyProject_Backend.Data;
 
@@ -11,9 +12,11 @@ using MyProject_Backend.Data;
 namespace MyProject_Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250110194448_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,10 +247,26 @@ namespace MyProject_Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClientId"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ClientId");
 
@@ -303,10 +322,16 @@ namespace MyProject_Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockId"));
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("CurrentQuantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int>("MaxThreshold")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinThreshold")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("StockId");
@@ -319,16 +344,16 @@ namespace MyProject_Backend.Migrations
 
             modelBuilder.Entity("MyProject_Backend.Models.StockMovement", b =>
                 {
-                    b.Property<int>("StockMovementId")
+                    b.Property<int>("MovementId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StockMovementId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MovementId"));
 
                     b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("MovementDate")
+                    b.Property<DateTime>("MoveDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ProductId")
@@ -337,18 +362,30 @@ namespace MyProject_Backend.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StockId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SupplierId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("StockMovementId");
+                    b.HasKey("MovementId");
 
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("StockId");
 
                     b.HasIndex("SupplierId");
 
@@ -363,10 +400,27 @@ namespace MyProject_Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SupplierId"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SupplierId");
 
@@ -458,6 +512,10 @@ namespace MyProject_Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MyProject_Backend.Models.Stock", null)
+                        .WithMany("StockMovements")
+                        .HasForeignKey("StockId");
+
                     b.HasOne("MyProject_Backend.Models.Supplier", "Supplier")
                         .WithMany("StockMovements")
                         .HasForeignKey("SupplierId")
@@ -477,8 +535,14 @@ namespace MyProject_Backend.Migrations
 
             modelBuilder.Entity("MyProject_Backend.Models.Product", b =>
                 {
-                    b.Navigation("Stock");
+                    b.Navigation("Stock")
+                        .IsRequired();
 
+                    b.Navigation("StockMovements");
+                });
+
+            modelBuilder.Entity("MyProject_Backend.Models.Stock", b =>
+                {
                     b.Navigation("StockMovements");
                 });
 

@@ -1,8 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\MyProject_Backend\\Data"
+    "\\my-react-frontend",
+    "\\my-react-frontend\\src",
+    "\\my-react-frontend\\src\\api",
+    "\\my-react-frontend\\src\\pages",
+    "\\MyProject_Backend\\Controllers",
+    "\\MyProject_Backend\\Data",
+    "\\MyProject_Backend\\Models"
   ],
-  "SelectedNode": "\\Project_DotNet.sln",
   "PreviewInSolutionExplorer": false
 }

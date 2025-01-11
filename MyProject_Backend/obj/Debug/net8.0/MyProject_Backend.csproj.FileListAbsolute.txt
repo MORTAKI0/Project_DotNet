@@ -168,3 +168,4 @@ C:\Users\abdel\OneDrive\Desktop\Project_DotNet\MyProject_Backend\obj\Debug\net8.
 C:\Users\abdel\OneDrive\Desktop\Project_DotNet\MyProject_Backend\obj\Debug\net8.0\MyProject_Backend.pdb
 C:\Users\abdel\OneDrive\Desktop\Project_DotNet\MyProject_Backend\obj\Debug\net8.0\MyProject_Backend.genruntimeconfig.cache
 C:\Users\abdel\OneDrive\Desktop\Project_DotNet\MyProject_Backend\obj\Debug\net8.0\ref\MyProject_Backend.dll
+C:\Users\abdel\OneDrive\Desktop\Project_DotNet\MyProject_Backend\obj\Debug\net8.0\MyProject_Backend.sourcelink.json

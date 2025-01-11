@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MyProject_Backend.Data; // Add this using directive
+using MyProject_Backend.Data;
 using MyProject_Backend.Models;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +27,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<User, IdentityRole>(options =>
+// Add Identity services
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false; // Disable email confirmation
 })
@@ -35,16 +36,14 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // Configure cookie-based authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.Cookie.HttpOnly = true; // Prevent client-side script access to the cookie
-        options.ExpireTimeSpan = TimeSpan.FromHours(3); // Cookie expiry time
-        options.LoginPath = "/api/auth/login"; // Redirect to login if unauthorized
-        options.AccessDeniedPath = "/api/auth/access-denied"; // Redirect if access is denied
-        options.SlidingExpiration = true; // Renew the cookie if the user is active
-    });
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Adjust the timeout
+});
 
+// Build the application
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -53,16 +52,17 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-app.UseCors("AllowReactApp");
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-app.UseCors("AllowSpecificOrigin"); // Enable CORS
+app.UseCors("AllowReactApp"); // Enable CORS
 
 app.UseAuthentication(); // Enable authentication
 app.UseAuthorization(); // Enable authorization
+
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
@@ -75,7 +75,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        var userManager = services.GetRequiredService<UserManager<User>>();
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         await SeedRolesAndAdminUser(roleManager, userManager); // Call the function
     }
     catch (Exception ex)
@@ -88,35 +88,46 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 // Function to seed roles and admin user
-async Task SeedRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
+async Task SeedRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
 {
     // Seed roles
-    string[] roleNames = { "Admin", "User" }; // Add more roles if needed
+    string[] roleNames = { "Admin", "User" };
     foreach (var roleName in roleNames)
     {
         if (!await roleManager.RoleExistsAsync(roleName))
         {
             await roleManager.CreateAsync(new IdentityRole(roleName));
+            Console.WriteLine($"Created role: {roleName}");
         }
     }
 
     // Seed admin user
-    var adminUser = new User
+    var adminUser = new ApplicationUser
     {
-        UserName = "admin",
+        UserName = "admin@example.com",
         Email = "admin@example.com",
-        Role = "Admin", // Set Role
-        Status = "Active" // Set Status
+        Role = "Admin",
+        Status = "Active"
     };
 
-    const string adminPassword = "Admin@123"; // Set a strong password
+    const string adminPassword = "Admin@123";
     var user = await userManager.FindByNameAsync(adminUser.UserName);
     if (user == null)
     {
         var createUserResult = await userManager.CreateAsync(adminUser, adminPassword);
         if (createUserResult.Succeeded)
         {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
+            var addToRoleResult = await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine($"Admin user created: {createUserResult.Succeeded}");
+            Console.WriteLine($"Admin role assigned: {addToRoleResult.Succeeded}");
+        }
+        else
+        {
+            Console.WriteLine("Failed to create admin user:");
+            foreach (var error in createUserResult.Errors)
+            {
+                Console.WriteLine($"- {error.Description}");
+            }
         }
     }
 }
