@@ -3,39 +3,63 @@ using Microsoft.EntityFrameworkCore;
 using MyProject_Backend.Data;
 using MyProject_Backend.Models;
 
-namespace MyProject_Backend.Controllers
+namespace MyProject_Backend.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class ProductController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProductController : ControllerBase
+    private readonly ApplicationDbContext _context;
+
+    public ProductController(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public ProductController(ApplicationDbContext context)
+    // GET: api/Product
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+    {
+        try
         {
-            _context = context;
+            return await _context.Products
+                .Include(p => p.Supplier) // Include Supplier relationship
+                .ToListAsync();
         }
-
-        // GET: api/Product
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        catch (Exception ex)
         {
-            return await _context.Products.ToListAsync();
-        }
-
-        // POST: api/Product
-        [HttpPost]
-        public async Task<IActionResult> CreateProduct(Product product)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            return Ok(product);
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
+    // POST: api/Product
+   [HttpPost]
+public async Task<IActionResult> CreateProduct(Product product)
+{
+    if (!ModelState.IsValid)
+    {
+        return BadRequest(ModelState);
+    }
+
+    if (product.SupplierId.HasValue)
+    {
+        var supplierExists = await _context.Suppliers.AnyAsync(s => s.SupplierId == product.SupplierId);
+        if (!supplierExists)
+        {
+            return BadRequest("The specified supplier does not exist.");
+        }
+    }
+
+    try
+    {
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetProducts), new { id = product.ProductId }, product);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+    }
+}
+
 }

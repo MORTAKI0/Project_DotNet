@@ -29,5 +29,11 @@ namespace MyProject_Backend.Models
         public ICollection<StockMovement>? StockMovements { get; set; }
         public int? SupplierId { get; set; }
         public Supplier? Supplier { get; set; }
+
+        // Ensure consistency between CurrentQuantity and Stock
+        public bool IsStockValid()
+        {
+            return Stock == null || Stock.Quantity == CurrentQuantity;
+        }
     }
 }

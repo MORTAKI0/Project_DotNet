@@ -3,11 +3,18 @@ using Microsoft.EntityFrameworkCore;
 using MyProject_Backend.Data;
 using MyProject_Backend.Models;
 using System;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// Add services to the container
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // Configure JSON options to handle reference loops
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.WriteIndented = true; // Optional: Pretty print JSON output
+    });
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -16,7 +23,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder
-                .WithOrigins("http://localhost:3000") // Your React app URL
+                .WithOrigins("http://localhost:3000") // React app URL
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
@@ -27,7 +34,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add Identity services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false; // Disable email confirmation
@@ -35,18 +41,15 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Configure cookie-based authentication
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Adjust the timeout
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 });
 
-// Build the application
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -56,19 +59,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
-app.UseCors("AllowReactApp"); // Enable CORS
-
-app.UseAuthentication(); // Enable authentication
-app.UseAuthorization(); // Enable authorization
-
+app.UseCors("AllowReactApp");
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// Seed roles and admin user on application startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -76,7 +72,7 @@ using (var scope = app.Services.CreateScope())
     {
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        await SeedRolesAndAdminUser(roleManager, userManager); // Call the function
+        await SeedRolesAndAdminUser(roleManager, userManager);
     }
     catch (Exception ex)
     {
@@ -87,10 +83,8 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// Function to seed roles and admin user
 async Task SeedRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
 {
-    // Seed roles
     string[] roleNames = { "Admin", "User" };
     foreach (var roleName in roleNames)
     {
@@ -101,7 +95,6 @@ async Task SeedRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserMana
         }
     }
 
-    // Seed admin user
     var adminUser = new ApplicationUser
     {
         UserName = "admin@example.com",
@@ -120,14 +113,6 @@ async Task SeedRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserMana
             var addToRoleResult = await userManager.AddToRoleAsync(adminUser, "Admin");
             Console.WriteLine($"Admin user created: {createUserResult.Succeeded}");
             Console.WriteLine($"Admin role assigned: {addToRoleResult.Succeeded}");
-        }
-        else
-        {
-            Console.WriteLine("Failed to create admin user:");
-            foreach (var error in createUserResult.Errors)
-            {
-                Console.WriteLine($"- {error.Description}");
-            }
         }
     }
 }

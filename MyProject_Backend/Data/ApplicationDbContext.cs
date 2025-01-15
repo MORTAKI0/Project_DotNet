@@ -21,12 +21,9 @@ namespace MyProject_Backend.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Configure Product
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
-                .HasPrecision(18, 2);
-
-            modelBuilder.Entity<StockMovement>()
-                .Property(sm => sm.UnitPrice)
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<Product>()
@@ -41,6 +38,11 @@ namespace MyProject_Backend.Data
                 .HasForeignKey(sm => sm.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Configure Supplier with unique index for Name
+            modelBuilder.Entity<Supplier>()
+                .HasIndex(s => s.Name)
+                .IsUnique();
+
             modelBuilder.Entity<Supplier>()
                 .HasMany(s => s.Products)
                 .WithOne(p => p.Supplier)
@@ -53,6 +55,12 @@ namespace MyProject_Backend.Data
                 .HasForeignKey(sm => sm.SupplierId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            // Configure StockMovement
+            modelBuilder.Entity<StockMovement>()
+                .Property(sm => sm.UnitPrice)
+                .HasPrecision(18, 2);
+
+            // Configure Client
             modelBuilder.Entity<Client>()
                 .HasMany(c => c.StockMovements)
                 .WithOne(sm => sm.Client)

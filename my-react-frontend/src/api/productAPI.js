@@ -11,19 +11,40 @@ const api = axios.create({
 
 const productAPI = {
     getAllProducts: async () => {
-        const response = await api.get('/Product');
-        return response.data;
+        try {
+            const response = await api.get('/Product');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching products:', error.response?.data || error.message);
+            throw error;
+        }
     },
     createProduct: async (product) => {
-        const response = await api.post('/Product', product);
-        return response.data;
+        try {
+            const response = await api.post('/Product', product);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating product:', error.response?.data || error.message);
+            throw error;
+        }
     },
-    updateProduct: async (id, product) => {
-        const response = await api.put(`/Product/${id}`, product);
-        return response.data;
+    getAllSuppliers: async () => {
+        try {
+            const response = await api.get('/Supplier');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching suppliers:', error.response?.data || error.message);
+            throw error;
+        }
     },
-    deleteProduct: async (id) => {
-        await api.delete(`/Product/${id}`);
+    createSupplier: async (supplier) => {
+        try {
+            const response = await api.post('/Supplier', supplier);
+            return response.data;
+        } catch (error) {
+            console.error('Error creating supplier:', error.response?.data || error.message);
+            throw error;
+        }
     },
 };
 
