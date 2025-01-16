@@ -7,27 +7,29 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+// Add services to the container.
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
-        // Configure JSON options to handle reference loops
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-        options.JsonSerializerOptions.WriteIndented = true; // Optional: Pretty print JSON output
+        // Instead of preserving reference loops (which adds $id/$values),
+        // this ignores any circular references to avoid those fields:
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
+        // Optional: make JSON output nicely indented
+        options.JsonSerializerOptions.WriteIndented = true;
     });
 
 // Configure CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        builder =>
-        {
-            builder
-                .WithOrigins("http://localhost:3000") // React app URL
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials();
-        });
+    options.AddPolicy("AllowReactApp", policyBuilder =>
+    {
+        policyBuilder
+            .WithOrigins("http://localhost:3000") // React app URL
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
 });
 
 // Configure the database and Identity
@@ -62,9 +64,14 @@ app.UseRouting();
 app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
+
+// Seed roles and admin user (if needed)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -83,8 +90,11 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-async Task SeedRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+async Task SeedRolesAndAdminUser(
+    RoleManager<IdentityRole> roleManager,
+    UserManager<ApplicationUser> userManager)
 {
+    // Create roles
     string[] roleNames = { "Admin", "User" };
     foreach (var roleName in roleNames)
     {
@@ -95,6 +105,7 @@ async Task SeedRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserMana
         }
     }
 
+    // Create admin user
     var adminUser = new ApplicationUser
     {
         UserName = "admin@example.com",

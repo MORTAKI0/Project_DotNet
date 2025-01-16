@@ -265,8 +265,10 @@ namespace MyProject_Backend.Migrations
                     b.Property<int>("CurrentQuantity")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    b.Property<bool>("IsFinal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("MinThreshold")
                         .HasColumnType("int");

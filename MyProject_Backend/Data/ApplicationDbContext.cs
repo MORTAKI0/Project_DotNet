@@ -27,6 +27,10 @@ namespace MyProject_Backend.Data
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<Product>()
+                .Property(p => p.IsFinal) // Ensure the new property IsFinal is included
+                .HasDefaultValue(false); // Default value for IsFinal
+
+            modelBuilder.Entity<Product>()
                 .HasOne(p => p.Stock)
                 .WithOne(s => s.Product)
                 .HasForeignKey<Stock>(s => s.ProductId)

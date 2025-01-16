@@ -12,8 +12,8 @@ using MyProject_Backend.Data;
 namespace MyProject_Backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250110213521_UpdateModels")]
-    partial class UpdateModels
+    [Migration("20250116185152_InitialIdentitySchema")]
+    partial class InitialIdentitySchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -268,8 +268,10 @@ namespace MyProject_Backend.Migrations
                     b.Property<int>("CurrentQuantity")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    b.Property<bool>("IsFinal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("MinThreshold")
                         .HasColumnType("int");
@@ -372,6 +374,9 @@ namespace MyProject_Backend.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("SupplierId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Suppliers");
                 });

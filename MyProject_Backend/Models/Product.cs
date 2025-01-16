@@ -22,7 +22,7 @@ namespace MyProject_Backend.Models
         [Range(0, double.MaxValue)]
         public decimal Price { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsFinal { get; set; } // Changed from IsActive to IsFinal
 
         // Relationships
         public Stock? Stock { get; set; }

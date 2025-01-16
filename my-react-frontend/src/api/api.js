@@ -9,14 +9,14 @@ const api = axios.create({
     },
 });
 
-// Add interceptor to include JWT token in requests
-api.interceptors.request.use((config) => {
+// 
+/*api.interceptors.request.use((config) => {
     const token = localStorage.getItem('jwtToken');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-});
+});*/
 
 export const login = async (username, password) => {
     try {
