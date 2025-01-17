@@ -1,97 +1,68 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using MyProject_Backend.Data;
-using MyProject_Backend.Models;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
-namespace MyProject_Backend.Controllers;
-
-[Route("api/[controller]")]
-[ApiController]
-public class ClientController : ControllerBase
+namespace MyProject_Backend.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public ClientController(ApplicationDbContext context)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ClientController : ControllerBase
     {
-        _context = context;
-    }
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Client>>> GetClients()
-    {
-        try
+        public ClientController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            var clients = await _context.Clients.ToListAsync();
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        [HttpPost("CreateClient")]
+        public async Task<IActionResult> CreateClient([FromBody] CreateClientDto model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Role = "Client",
+                Status = "Active",
+                EmailConfirmed = true
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            // Assign 'Client' role to the user
+            if (!await _roleManager.RoleExistsAsync("Client"))
+                await _roleManager.CreateAsync(new IdentityRole("Client"));
+
+            await _userManager.AddToRoleAsync(user, "Client");
+
+            return Ok(new { Message = "Client created successfully" });
+        }
+
+        [HttpGet("GetClients")]
+        public async Task<IActionResult> GetClients()
+        {
+            var clients = await _userManager.GetUsersInRoleAsync("Client");
             return Ok(clients);
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateClient(Client client)
+    public class CreateClientDto
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        try
-        {
-            _context.Clients.Add(client);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetClients), new { id = client.ClientId }, client);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateClient(int id, Client updatedClient)
-    {
-        if (id != updatedClient.ClientId)
-        {
-            return BadRequest("Client ID mismatch.");
-        }
-
-        try
-        {
-            _context.Entry(updatedClient).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            return NotFound("Client not found.");
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteClient(int id)
-    {
-        try
-        {
-            var client = await _context.Clients.FindAsync(id);
-            if (client == null)
-            {
-                return NotFound("Client not found.");
-            }
-
-            _context.Clients.Remove(client);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Internal server error: {ex.Message}");
-        }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }

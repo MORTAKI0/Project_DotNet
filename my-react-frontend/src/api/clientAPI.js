@@ -10,39 +10,21 @@ const api = axios.create({
 });
 
 const clientAPI = {
-  getAllClients: async () => {
+  createClient: async (clientData) => {
     try {
-      const response = await api.get("/Client");
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching clients:", error.response?.data || error.message);
-      throw error;
-    }
-  },
-  createClient: async (client) => {
-    try {
-      const response = await api.post("/Client", client);
+      const response = await api.post("/Client/CreateClient", clientData);
       return response.data;
     } catch (error) {
       console.error("Error creating client:", error.response?.data || error.message);
       throw error;
     }
   },
-  updateClient: async (id, client) => {
+  getClients: async () => {
     try {
-      const response = await api.put(`/Client/${id}`, client);
+      const response = await api.get("/Client/GetClients");
       return response.data;
     } catch (error) {
-      console.error("Error updating client:", error.response?.data || error.message);
-      throw error;
-    }
-  },
-  deleteClient: async (id) => {
-    try {
-      const response = await api.delete(`/Client/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting client:", error.response?.data || error.message);
+      console.error("Error fetching clients:", error.response?.data || error.message);
       throw error;
     }
   },

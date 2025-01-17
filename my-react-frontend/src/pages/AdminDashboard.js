@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import productAPI from "../api/productAPI";
+import clientAPI from "../api/clientAPI"; // Import the client API
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
+  const [clients, setClients] = useState([]); // Add clients state
   const [newProduct, setNewProduct] = useState({
     name: "",
     reference: "",
@@ -14,16 +16,24 @@ const AdminDashboard = () => {
     supplierId: "",
   });
   const [newSupplier, setNewSupplier] = useState({ name: "" });
+  const [newClient, setNewClient] = useState({ // Add newClient state
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // Fetch data for products and suppliers
+  // Fetch data for products, suppliers, and clients
   const fetchData = async () => {
     try {
       const productsData = await productAPI.getAllProducts();
       const suppliersData = await productAPI.getAllSuppliers();
+      const clientsData = await clientAPI.getClients(); // Fetch clients
       setProducts(productsData || []);
       setSuppliers(suppliersData || []);
+      setClients(clientsData || []); // Set clients
       setError(null); // Clear errors on success
     } catch (err) {
       console.error("Failed to fetch data:", err);
@@ -74,6 +84,26 @@ const AdminDashboard = () => {
     }
   };
 
+  // Handle new client creation
+  const handleAddClient = async (e) => {
+    e.preventDefault();
+    try {
+      await clientAPI.createClient(newClient);
+      setNewClient({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+      });
+      fetchData(); // Refresh data
+      setSuccessMessage("Client added successfully!");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      console.error("Error adding client:", err);
+      setError("Failed to add client.");
+    }
+  };
+
   return (
     <div style={{ maxWidth: "800px", margin: "20px auto", fontFamily: "Arial, sans-serif" }}>
       <h1 style={{ textAlign: "center" }}>Admin Dashboard</h1>
@@ -81,6 +111,7 @@ const AdminDashboard = () => {
       {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
       {successMessage && <p style={{ color: "green", textAlign: "center" }}>{successMessage}</p>}
 
+      {/* Add New Product Section */}
       <div style={{ marginBottom: "20px" }}>
         <h2>Add New Product</h2>
         <form onSubmit={handleAddProduct} style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -151,6 +182,7 @@ const AdminDashboard = () => {
         </form>
       </div>
 
+      {/* Add New Supplier Section */}
       <div style={{ marginBottom: "20px" }}>
         <h2>Add New Supplier</h2>
         <form onSubmit={handleAddSupplier} style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
@@ -168,6 +200,49 @@ const AdminDashboard = () => {
         </form>
       </div>
 
+      {/* Add New Client Section */}
+      <div style={{ marginBottom: "20px" }}>
+        <h2>Add New Client</h2>
+        <form onSubmit={handleAddClient} style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={newClient.firstName}
+            onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
+            required
+            style={{ padding: "8px", flex: "1" }}
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={newClient.lastName}
+            onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
+            required
+            style={{ padding: "8px", flex: "1" }}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={newClient.email}
+            onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+            required
+            style={{ padding: "8px", flex: "1" }}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={newClient.password}
+            onChange={(e) => setNewClient({ ...newClient, password: e.target.value })}
+            required
+            style={{ padding: "8px", flex: "1" }}
+          />
+          <button type="submit" style={{ padding: "10px 15px", backgroundColor: "#17a2b8", color: "#fff" }}>
+            Add Client
+          </button>
+        </form>
+      </div>
+
+      {/* Products Table */}
       <h2>Products</h2>
       {products.length > 0 ? (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
